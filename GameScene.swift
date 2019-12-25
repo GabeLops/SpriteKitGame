@@ -10,6 +10,7 @@ import SpriteKit
 
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    var ballArray = ["ballBlue","ballCyan","ballGreen","ballGrey","ballPurple","ballRed","ballYellow"]
     var scoreLabel: SKLabelNode!
     var score = 0 {
         didSet {
@@ -66,7 +67,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         guard let touch = touches.first else{return}
+        
         let location = touch.location(in :self)
         let objects = nodes(at: location)
         
@@ -84,13 +87,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 addChild(box)
                 
             }else {
-                let ball = SKSpriteNode(imageNamed: "ballRed")
-                ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2.0)
-                ball.physicsBody?.restitution = 0.4
-                ball.physicsBody?.contactTestBitMask = ball.physicsBody?.collisionBitMask ?? 0
-                ball.position = location
-                ball.name = "ball"
-                addChild(ball)
+                if location.y > 640{
+                    let ball = SKSpriteNode(imageNamed: ballArray.randomElement()!)
+                    ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2.0)
+                    ball.physicsBody?.restitution = 0.4
+                    ball.physicsBody?.contactTestBitMask = ball.physicsBody?.collisionBitMask ?? 0
+                    ball.position = location
+                    ball.name = "ball"
+                    addChild(ball)
+                        
+                }
             }
         }
     }
@@ -145,6 +151,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     func destroy(ball: SKNode){
         ball.removeFromParent()
+        if let fireParticles = SKEmitterNode(fileNamed: "FireParticles") {
+            fireParticles.position = ball.position
+            addChild(fireParticles)
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
