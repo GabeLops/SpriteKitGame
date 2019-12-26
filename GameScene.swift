@@ -96,6 +96,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 box.physicsBody = SKPhysicsBody(rectangleOf: box.size)
                 box.physicsBody?.isDynamic = false
+                box.name = "box"
                 addChild(box)
                 
             }else {
@@ -114,6 +115,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
+        
     }
     
     func makeBouncer(at position: CGPoint) {
@@ -155,18 +157,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         slotGlow.run(spinForever)
     }
     
-    func collision(between ball: SKNode, object: SKNode){
-        // if colides with box destroy box and if lands in green, ball += 1
+    func collision(between ball: SKNode, object: SKNode, box: SKNode){
+        // if colides with box destroy box
+        
+        if object.name == "box" {
+            destroying(box: box)
+        }
         
         if object.name == "good" {
             destroy(ball: ball)
             score += 1
+            balls += 1
             
         }else if object.name == "bad" {
             destroy(ball: ball)
             score -= 1
         }
     }
+    
+    func destroying(box: SKNode){
+        box.removeFromParent()
+        if let 
+    }
+    
     func destroy(ball: SKNode){
         ball.removeFromParent()
         if let fireParticles = SKEmitterNode(fileNamed: "FireParticles") {
@@ -181,9 +194,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let nodeB = contact.bodyB.node else {return}
         
         if nodeA.name == "ball" {
-            collision(between: nodeA, object: nodeB)
+            collision(between: nodeA, object: nodeB, box: nodeA)
         }else if nodeB.name == "ball" {
-            collision(between: nodeB, object: nodeA)
+            collision(between: nodeB, object: nodeA, box: nodeA)
         }
     }
        
